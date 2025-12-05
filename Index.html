@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabor do Caldo - Cardápio Digital</title>
+    <style>
+        :root {
+            --vermelho: #c41e3a;
+            --branco: #ffffff;
+            --cinza-claro: #f5f5f5;
+            --cinza-escuro: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--cinza-claro);
+            color: var(--cinza-escuro);
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        header {
+            background-color: var(--vermelho);
+            color: var(--branco);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .info {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .info-item {
+            margin: 5px 0;
+        }
+        
+        /* Navegação por abas */
+        .tabs {
+            display: flex;
+            background-color: var(--branco);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            min-width: 150px;
+        }
+        
+        .tab:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .tab.active {
+            background-color: var(--vermelho);
+            color: var(--branco);
+        }
+        
+        /* Conteúdo das abas */
+        .tab-content {
+            display: none;
+            background-color: var(--branco);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Produtos */
+        .produtos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .produto {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: var(--branco);
+            transition: transform 0.3s;
+        }
+        
+        .produto:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .produto-titulo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--vermelho);
+            margin-bottom: 5px;
+        }
+        
+        .produto-descricao {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            min-height: 60px;
+        }
+        
+        .produto-preco {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--cinza-escuro);
+            margin-bottom: 15px;
+        }
+        
+        .produto-controles {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .quantidade-controles {
+            display: flex;
+            align-items: center;
+        }
+        
+        .quantidade-btn {
+            width: 30px;
+            height: 30px;
+            background-color: var(--vermelho);
+            color: var(--branco);
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .quantidade {
+            margin: 0 10px;
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .adicionar-btn {
+            background-color: var(--vermelho);
+            color: var(--branco);
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .adicionar-btn:hover {
+            background-color: #a0182e;
+        }
+        
+        /* Botão do carrinho */
+        .carrinho-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--vermelho);
+            color: var(--branco);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .carrinho-contador {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--cinza-escuro);
+            color: var(--branco);
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        
+        /* Modal do carrinho */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--branco);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--vermelho);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--cinza-escuro);
+        }
+        
+        .carrinho-vazio {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .carrinho-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .carrinho-item-info {
+            flex: 1;
+        }
+        
+        .carrinho-item-nome {
+            font-weight: bold;
+        }
+        
+        .carrinho-item-preco {
+            color: var(--vermelho);
+            font-weight: bold;
+        }
+        
+        .carrinho-item-controles {
+            display: flex;
+            align-items: center;
+        }
+        
+        .carrinho-total {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 2px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .carrinho-total-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .carrinho-total-final {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .carrinho-acoes {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-limpar {
+            background-color: #ddd;
+            color: var(--cinza-escuro);
+        }
+        
+        .btn-limpar:hover {
+            background-color: #ccc;
+        }
+        
+        .btn-finalizar {
+            background-color: var(--vermelho);
+            color: var(--branco);
+        }
+        
+        .btn-finalizar:hover {
+            background-color: #a0182e;
+        }
+        
+        /* Modal de finalização */
+        .finalizar-form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: var(--branco);
+        }
+        
+        .nota-fiscal {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: var(--cinza-claro);
+        }
+        
+        .nota-fiscal-header {
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .nota-fiscal-titulo {
+            color: var(--vermelho);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .nota-fiscal-info {
+            margin-bottom: 15px;
+        }
+        
+        .nota-fiscal-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .nota-fiscal-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .acoes-pedido {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: var(--branco);
+        }
+        
+        .btn-imprimir {
+            background-color: var(--cinza-escuro);
+            color: var(--branco);
+        }
+        
+        /* Aba de clientes e pedidos */
+        .aba-container {
+            background-color: var(--branco);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .aba-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .aba-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .aba-tab.active {
+            border-bottom: 3px solid var(--vermelho);
+            font-weight: bold;
+        }
+        
+        .aba-conteudo {
+            display: none;
+        }
+        
+        .aba-conteudo.active {
+            display: block;
+        }
+        
+        .lista-clientes, .lista-pedidos {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .cliente-item, .pedido-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cliente-item:hover, .pedido-item:hover {
+            background-color: var(--cinza-claro);
+        }
+        
+        /* Rodapé */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: var(--cinza-escuro);
+            color: var(--branco);
+            border-radius: 10px;
+        }
+        
+        /* Mensagens de alerta */
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 0 50%;
+            }
+            
+            .produtos {
+                grid-template-columns: 1fr;
+            }
+            
+            .carrinho-acoes, .acoes-pedido {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .carrinho-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .carrinho-item-controles {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header>
+            <div class="logo">SABOR DO CALDO</div>
+            <div class="info">
+                <div class="info-item">CNPJ: 61.986.117/0001-80</div>
+                <div class="info-item">Passos-MG</div>
+                <div class="info-item">Quinta a Domingo: 19:00 às 23:00</div>
+                <div class="info-item">(35) 99971-1358</div>
+            </div>
+        </header>
+        
+        <!-- Abas de categorias -->
+        <div class="tabs">
+            <div class="tab active" data-tab="caldos">Caldo de Feijão</div>
+            <div class="tab" data-tab="lanches">Lanches Artesanais</div>
+            <div class="tab" data-tab="batatas">Batata no Pote</div>
+            <div class="tab" data-tab="combos">Combos</div>
+            <div class="tab" data-tab="bebidas">Bebidas</div>
+        </div>
+        
+        <!-- Conteúdo das abas -->
+        <div id="caldos" class="tab-content active">
+            <h2>Caldo de Feijão (500g)</h2>
+            <div class="produtos">
+                <!-- Os produtos serão inseridos via JavaScript -->
+            </div>
+        </div>
+        
+        <div id="lanches" class="tab-content">
+            <h2>Lanches Artesanais</h2>
+            <div class="produtos">
+                <!-- Os produtos serão inseridos via JavaScript -->
+            </div>
+        </div>
+        
+        <div id="batatas" class="tab-content">
+            <h2>Batata no Pote (500g)</h2>
+            <div class="produtos">
+                <!-- Os produtos serão inseridos via JavaScript -->
+            </div>
+        </div>
+        
+        <div id="combos" class="tab-content">
+            <h2>Combos</h2>
+            <div class="produtos">
+                <!-- Os produtos serão inseridos via JavaScript -->
+            </div>
+        </div>
+        
+        <div id="bebidas" class="tab-content">
+            <h2>Bebidas</h2>
+            <div class="produtos">
+                <!-- Os produtos serão inseridos via JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Botão do carrinho -->
+        <button class="carrinho-btn">
+            🛒
+            <span class="carrinho-contador">0</span>
+        </button>
+        
+        <!-- Modal do carrinho -->
+        <div id="carrinho-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Seu Carrinho</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div id="carrinho-conteudo">
+                    <!-- Conteúdo do carrinho será inserido via JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal de finalização -->
+        <div id="finalizar-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Finalizar Pedido</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div id="finalizar-conteudo">
+                    <!-- Conteúdo da finalização será inserido via JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Aba de clientes e pedidos -->
+        <div class="aba-container">
+            <div class="aba-tabs">
+                <div class="aba-tab active" data-aba="clientes">Clientes</div>
+                <div class="aba-tab" data-aba="pedidos">Pedidos Finalizados</div>
+            </div>
+            
+            <div id="clientes" class="aba-conteudo active">
+                <h3>Clientes Cadastrados</h3>
+                <div class="lista-clientes">
+                    <!-- Lista de clientes será inserida via JavaScript -->
+                </div>
+            </div>
+            
+            <div id="pedidos" class="aba-conteudo">
+                <h3>Pedidos Finalizados</h3>
+                <div class="lista-pedidos">
+                    <!-- Lista de pedidos será inserida via JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rodapé -->
+        <footer>
+            <p>Taxa de entrega: R$ 6,00</p>
+        </footer>
+    </div>
+
+    <script>
+        // Dados dos produtos
+        const produtos = {
+            caldos: [
+                {
+                    id: 1,
+                    nome: "Tradicional",
+                    preco: 14.90,
+                    descricao: "Caldo de feijão. Acompanhamentos: torresmo crocante, torrada sequinha e cheiro verde."
+                },
+                {
+                    id: 2,
+                    nome: "Bacon e calabresa",
+                    preco: 16.90,
+                    descricao: "Caldo de feijão com bacon e calabresa. Acompanhamentos: torresmo crocante, torrada sequinha e cheiro verde."
+                },
+                {
+                    id: 3,
+                    nome: "Bacon, calabresa e ovo de codorna",
+                    preco: 17.90,
+                    descricao: "Caldo de feijão com bacon, calabresa e 3 ovos de codorna. Acompanhamentos: torresmo crocante, torrada sequinha e cheiro verde."
+                },
+                {
+                    id: 4,
+                    nome: "Bacon, calabresa e mussarela",
+                    preco: 18.90,
+                    descricao: "Caldo de feijão com bacon, calabresa e mussarela. Acompanhamentos: torresmo crocante, torrada sequinha e cheiro verde."
+                },
+                {
+                    id: 5,
+                    nome: "Completo",
+                    preco: 19.90,
+                    descricao: "Caldo de feijão com bacon, calabresa, 3 ovos de codorna e mussarela. Acompanhamentos: torresmo crocante, torrada sequinha e cheiro verde."
+                }
+            ],
+            lanches: [
+                {
+                    id: 6,
+                    nome: "X-burguer",
+                    preco: 17.90,
+                    descricao: "Pão, hambúrguer, queijo, alface e tomate."
+                },
+                {
+                    id: 7,
+                    nome: "X-salada",
+                    preco: 19.90,
+                    descricao: "Pão, hambúrguer, queijo, alface, tomate e maionese."
+                },
+                {
+                    id: 8,
+                    nome: "X-egg",
+                    preco: 19.90,
+                    descricao: "Pão, hambúrguer, queijo, ovo, alface e tomate."
+                },
+                {
+                    id: 9,
+                    nome: "X-bacon",
+                    preco: 21.90,
+                    descricao: "Pão, hambúrguer, queijo, bacon, alface e tomate."
+                },
+                {
+                    id: 10,
+                    nome: "X-salada egg",
+                    preco: 22.90,
+                    descricao: "Pão, hambúrguer, queijo, ovo, alface, tomate e maionese."
+                },
+                {
+                    id: 11,
+                    nome: "X-bacon salada",
+                    preco: 23.90,
+                    descricao: "Pão, hambúrguer, queijo, bacon, alface, tomate e maionese."
+                },
+                {
+                    id: 12,
+                    nome: "X-bacon egg",
+                    preco: 23.90,
+                    descricao: "Pão, hambúrguer, queijo, bacon, ovo, alface e tomate."
+                },
+                {
+                    id: 13,
+                    nome: "X-tudo",
+                    preco: 25.90,
+                    descricao: "Pão, hambúrguer, queijo, bacon, ovo, alface, tomate, milho, batata palha e maionese."
+                }
+            ],
+            batatas: [
+                {
+                    id: 14,
+                    nome: "Frango desfiado com cheddar",
+                    preco: 20.90,
+                    descricao: "Batata frita com frango desfiado e cheddar cremoso."
+                },
+                {
+                    id: 15,
+                    nome: "Strogonoff de frango",
+                    preco: 21.90,
+                    descricao: "Batata frita com strogonoff de frango cremoso."
+                },
+                {
+                    id: 16,
+                    nome: "Frango com creme de milho",
+                    preco: 21.90,
+                    descricao: "Batata frita com frango desfiado e creme de milho."
+                },
+                {
+                    id: 17,
+                    nome: "Bolonhesa",
+                    preco: 22.90,
+                    descricao: "Batata frita com molho bolonhesa e queijo."
+                },
+                {
+                    id: 18,
+                    nome: "Carne bovina desfiada",
+                    preco: 24.90,
+                    descricao: "Batata frita com carne bovina desfiada e queijo."
+                }
+            ],
+            combos: [
+                {
+                    id: 19,
+                    nome: "COMBO 1",
+                    preco: 37.00,
+                    descricao: "2 caldos de feijão completos"
+                },
+                {
+                    id: 20,
+                    nome: "COMBO 2",
+                    preco: 38.00,
+                    descricao: "1 caldo de feijão completo + 1 Batata no pote com Strogonoff de frango"
+                },
+                {
+                    id: 21,
+                    nome: "COMBO 3",
+                    preco: 38.00,
+                    descricao: "1 caldo de feijão completo + 1 X-bacon"
+                },
+                {
+                    id: 22,
+                    nome: "COMBO 4",
+                    preco: 40.00,
+                    descricao: "2 Batatas no pote com Strogonoff de frango"
+                },
+                {
+                    id: 23,
+                    nome: "COMBO 5",
+                    preco: 44.00,
+                    descricao: "1 X-tudo + 1 Batata no pote com Strogonoff de frango"
+                },
+                {
+                    id: 24,
+                    nome: "COMBO 6",
+                    preco: 48.00,
+                    descricao: "2 X-TUDO"
+                }
+            ],
+            bebidas: [
+                {
+                    id: 25,
+                    nome: "Lata 350ml",
+                    preco: 6.50,
+                    descricao: "Coca-Cola, Coca-Cola Zero, Fanta Laranja, Guaraná Antártica"
+                },
+                {
+                    id: 26,
+                    nome: "2 Litros",
+                    preco: 15.00,
+                    descricao: "Coca-Cola, Fanta Laranja, Guaraná Antártica"
+                }
+            ]
+        };
+
+        // Estado da aplicação
+        let carrinho = [];
+        let numeroPedido = JSON.parse(localStorage.getItem('ultimoPedido')) || 1;
+        let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+        let pedidosFinalizados = JSON.parse(localStorage.getItem('pedidosFinalizados')) || [];
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarProdutos();
+            atualizarContadorCarrinho();
+            carregarClientes();
+            carregarPedidosFinalizados();
+            
+            // Event listeners para as abas de categorias
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remover classe active de todas as abas e conteúdos
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Adicionar classe active à aba e conteúdo selecionados
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Event listeners para as abas de clientes/pedidos
+            document.querySelectorAll('.aba-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const abaId = this.getAttribute('data-aba');
+                    
+                    // Remover classe active de todas as abas e conteúdos
+                    document.querySelectorAll('.aba-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.aba-conteudo').forEach(c => c.classList.remove('active'));
+                    
+                    // Adicionar classe active à aba e conteúdo selecionados
+                    this.classList.add('active');
+                    document.getElementById(abaId).classList.add('active');
+                });
+            });
+            
+            // Event listeners para os modais
+            document.querySelector('.carrinho-btn').addEventListener('click', abrirCarrinho);
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+            
+            // Fechar modal ao clicar fora
+            window.addEventListener('click', function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
+                }
+            });
+        });
+
+        // Funções para carregar produtos
+        function carregarProdutos() {
+            for (const categoria in produtos) {
+                const container = document.querySelector(`#${categoria} .produtos`);
+                container.innerHTML = '';
+                
+                produtos[categoria].forEach(produto => {
+                    const produtoElement = criarElementoProduto(produto);
+                    container.appendChild(produtoElement);
+                });
+            }
+        }
+
+        function criarElementoProduto(produto) {
+            const div = document.createElement('div');
+            div.className = 'produto';
+            div.innerHTML = `
+                <div class="produto-titulo">${produto.nome}</div>
+                <div class="produto-descricao">${produto.descricao}</div>
+                <div class="produto-preco">R$ ${produto.preco.toFixed(2)}</div>
+                <div class="produto-controles">
+                    <div class="quantidade-controles">
+                        <button class="quantidade-btn menos" data-id="${produto.id}">-</button>
+                        <span class="quantidade" data-id="${produto.id}">0</span>
+                        <button class="quantidade-btn mais" data-id="${produto.id}">+</button>
+                    </div>
+                    <button class="adicionar-btn" data-id="${produto.id}">Adicionar</button>
+                </div>
+            `;
+            
+            // Event listeners para os botões
+            div.querySelector('.menos').addEventListener('click', function() {
+                diminuirQuantidade(produto.id);
+            });
+            
+            div.querySelector('.mais').addEventListener('click', function() {
+                aumentarQuantidade(produto.id);
+            });
+            
+            div.querySelector('.adicionar-btn').addEventListener('click', function() {
+                adicionarAoCarrinho(produto);
+            });
+            
+            return div;
+        }
+
+        // Funções do carrinho
+        function aumentarQuantidade(id) {
+            const quantidadeElement = document.querySelector(`.quantidade[data-id="${id}"]`);
+            let quantidade = parseInt(quantidadeElement.textContent);
+            quantidadeElement.textContent = quantidade + 1;
+        }
+
+        function diminuirQuantidade(id) {
+            const quantidadeElement = document.querySelector(`.quantidade[data-id="${id}"]`);
+            let quantidade = parseInt(quantidadeElement.textContent);
+            if (quantidade > 0) {
+                quantidadeElement.textContent = quantidade - 1;
+            }
+        }
+
+        function adicionarAoCarrinho(produto) {
+            const quantidadeElement = document.querySelector(`.quantidade[data-id="${produto.id}"]`);
+            const quantidade = parseInt(quantidadeElement.textContent);
+            
+            if (quantidade === 0) {
+                mostrarAlerta('Selecione pelo menos 1 item', 'error');
+                return;
+            }
+            
+            // Verificar se o produto já está no carrinho
+            const itemExistente = carrinho.find(item => item.id === produto.id);
+            
+            if (itemExistente) {
+                itemExistente.quantidade += quantidade;
+            } else {
+                carrinho.push({
+                    id: produto.id,
+                    nome: produto.nome,
+                    preco: produto.preco,
+                    quantidade: quantidade
+                });
+            }
+            
+            // Resetar quantidade
+            quantidadeElement.textContent = '0';
+            
+            // Atualizar contador do carrinho
+            atualizarContadorCarrinho();
+            
+            // Feedback visual
+            mostrarAlerta(`${quantidade} ${produto.nome} adicionado(s) ao carrinho!`, 'success');
+        }
+
+        function mostrarAlerta(mensagem, tipo) {
+            // Remover alertas anteriores
+            const alertasAnteriores = document.querySelectorAll('.alert');
+            alertasAnteriores.forEach(alerta => alerta.remove());
+            
+            // Criar novo alerta
+            const alerta = document.createElement('div');
+            alerta.className = `alert alert-${tipo}`;
+            alerta.textContent = mensagem;
+            
+            // Adicionar ao topo da página
+            document.querySelector('.container').insertBefore(alerta, document.querySelector('header'));
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                alerta.remove();
+            }, 3000);
+        }
+
+        function atualizarContadorCarrinho() {
+            const totalItens = carrinho.reduce((total, item) => total + item.quantidade, 0);
+            document.querySelector('.carrinho-contador').textContent = totalItens;
+        }
+
+        function abrirCarrinho() {
+            const modal = document.getElementById('carrinho-modal');
+            const conteudo = document.getElementById('carrinho-conteudo');
+            
+            if (carrinho.length === 0) {
+                conteudo.innerHTML = '<div class="carrinho-vazio">Seu carrinho está vazio</div>';
+            } else {
+                let html = '';
+                let subtotal = 0;
+                
+                carrinho.forEach(item => {
+                    const totalItem = item.preco * item.quantidade;
+                    subtotal += totalItem;
+                    
+                    html += `
+                        <div class="carrinho-item">
+                            <div class="carrinho-item-info">
+                                <div class="carrinho-item-nome">${item.nome}</div>
+                                <div class="carrinho-item-preco">R$ ${item.preco.toFixed(2)} x ${item.quantidade}</div>
+                            </div>
+                            <div class="carrinho-item-controles">
+                                <button class="quantidade-btn menos-carrinho" data-id="${item.id}">-</button>
+                                <span class="quantidade">${item.quantidade}</span>
+                                <button class="quantidade-btn mais-carrinho" data-id="${item.id}">+</button>
+                                <button class="quantidade-btn remover-carrinho" data-id="${item.id}">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                const taxaEntrega = 6.00;
+                const total = subtotal + taxaEntrega;
+                
+                html += `
+                    <div class="carrinho-total">
+                        <div class="carrinho-total-item">
+                            <span>Subtotal:</span>
+                            <span>R$ ${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div class="carrinho-total-item">
+                            <span>Taxa de entrega:</span>
+                            <span>R$ ${taxaEntrega.toFixed(2)}</span>
+                        </div>
+                        <div class="carrinho-total-item carrinho-total-final">
+                            <span>Total:</span>
+                            <span>R$ ${total.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="carrinho-acoes">
+                        <button class="btn btn-limpar" id="limpar-carrinho">Limpar Carrinho</button>
+                        <button class="btn btn-finalizar" id="finalizar-pedido">Finalizar Pedido</button>
+                    </div>
+                `;
+                
+                conteudo.innerHTML = html;
+                
+                // Event listeners para os botões do carrinho
+                document.querySelectorAll('.menos-carrinho').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = parseInt(this.getAttribute('data-id'));
+                        diminuirQuantidadeCarrinho(id);
+                    });
+                });
+                
+                document.querySelectorAll('.mais-carrinho').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = parseInt(this.getAttribute('data-id'));
+                        aumentarQuantidadeCarrinho(id);
+                    });
+                });
+                
+                document.querySelectorAll('.remover-carrinho').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = parseInt(this.getAttribute('data-id'));
+                        removerDoCarrinho(id);
+                    });
+                });
+                
+                document.getElementById('limpar-carrinho').addEventListener('click', limparCarrinho);
+                document.getElementById('finalizar-pedido').addEventListener('click', finalizarPedido);
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function aumentarQuantidadeCarrinho(id) {
+            const item = carrinho.find(item => item.id === id);
+            if (item) {
+                item.quantidade += 1;
+                abrirCarrinho();
+                atualizarContadorCarrinho();
+            }
+        }
+
+        function diminuirQuantidadeCarrinho(id) {
+            const item = carrinho.find(item => item.id === id);
+            if (item) {
+                if (item.quantidade > 1) {
+                    item.quantidade -= 1;
+                } else {
+                    carrinho = carrinho.filter(item => item.id !== id);
+                }
+                abrirCarrinho();
+                atualizarContadorCarrinho();
+            }
+        }
+
+        function removerDoCarrinho(id) {
+            carrinho = carrinho.filter(item => item.id !== id);
+            abrirCarrinho();
+            atualizarContadorCarrinho();
+        }
+
+        function limparCarrinho() {
+            if (confirm('Tem certeza que deseja limpar o carrinho?')) {
+                carrinho = [];
+                abrirCarrinho();
+                atualizarContadorCarrinho();
+            }
+        }
+
+        function finalizarPedido() {
+            const modal = document.getElementById('finalizar-modal');
+            const conteudo = document.getElementById('finalizar-conteudo');
+            
+            // Calcular totais
+            const subtotal = carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
+            const taxaEntrega = 6.00;
+            const total = subtotal + taxaEntrega;
+            
+            let html = `
+                <form class="finalizar-form" id="form-finalizar">
+                    <div class="form-group">
+                        <label class="form-label" for="nome">Nome:</label>
+                        <input type="text" id="nome" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="telefone">Telefone:</label>
+                        <input type="tel" id="telefone" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="endereco">Endereço:</label>
+                        <input type="text" id="endereco" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pagamento">Forma de Pagamento:</label>
+                        <select id="pagamento" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option value="dinheiro">Dinheiro</option>
+                            <option value="pix">PIX</option>
+                            <option value="cartao">Cartão</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="troco-container" style="display: none;">
+                        <label class="form-label" for="troco">Troco para quanto?</label>
+                        <input type="number" id="troco" class="form-input" step="0.01" min="${total}">
+                    </div>
+                    <button type="submit" class="btn btn-finalizar">Confirmar Pedido</button>
+                </form>
+            `;
+            
+            conteudo.innerHTML = html;
+            
+            // Mostrar/ocultar campo de troco
+            document.getElementById('pagamento').addEventListener('change', function() {
+                const trocoContainer = document.getElementById('troco-container');
+                trocoContainer.style.display = this.value === 'dinheiro' ? 'block' : 'none';
+            });
+            
+            // Event listener para o formulário
+            document.getElementById('form-finalizar').addEventListener('submit', function(e) {
+                e.preventDefault();
+                confirmarPedido();
+            });
+            
+            modal.style.display = 'flex';
+            document.getElementById('carrinho-modal').style.display = 'none';
+        }
+
+        function confirmarPedido() {
+            const nome = document.getElementById('nome').value;
+            const telefone = document.getElementById('telefone').value;
+            const endereco = document.getElementById('endereco').value;
+            const pagamento = document.getElementById('pagamento').value;
+            const troco = document.getElementById('troco').value;
+            
+            // Validações básicas
+            if (!nome || !telefone || !endereco || !pagamento) {
+                mostrarAlerta('Preencha todos os campos obrigatórios', 'error');
+                return;
+            }
+            
+            if (pagamento === 'dinheiro' && (!troco || parseFloat(troco) < parseFloat(document.getElementById('finalizar-conteudo').querySelector('.carrinho-total-final span:last-child').textContent.replace('R$ ', '')))) {
+                mostrarAlerta('Informe um valor para troco maior ou igual ao total', 'error');
+                return;
+            }
+            
+            // Verificar se o cliente já existe
+            let cliente = clientes.find(c => c.telefone === telefone);
+            if (!cliente) {
+                cliente = {
+                    id: clientes.length + 1,
+                    nome: nome,
+                    telefone: telefone,
+                    endereco: endereco
+                };
+                clientes.push(cliente);
+                localStorage.setItem('clientes', JSON.stringify(clientes));
+                carregarClientes();
+            }
+            
+            // Calcular totais
+            const subtotal = carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
+            const taxaEntrega = 6.00;
+            const total = subtotal + taxaEntrega;
+            
+            // Criar pedido
+            const pedido = {
+                numero: numeroPedido,
+                data: new Date().toLocaleString('pt-BR'),
+                cliente: cliente,
+                itens: [...carrinho],
+                subtotal: subtotal,
+                taxaEntrega: taxaEntrega,
+                total: total,
+                pagamento: pagamento,
+                troco: troco || null
+            };
+            
+            pedidosFinalizados.push(pedido);
+            localStorage.setItem('pedidosFinalizados', JSON.stringify(pedidosFinalizados));
+            
+            // Atualizar número do próximo pedido
+            numeroPedido++;
+            localStorage.setItem('ultimoPedido', JSON.stringify(numeroPedido));
+            
+            carregarPedidosFinalizados();
+            
+            // Mostrar nota fiscal
+            mostrarNotaFiscal(pedido);
+            
+            // Limpar carrinho
+            carrinho = [];
+            atualizarContadorCarrinho();
+        }
+
+        function mostrarNotaFiscal(pedido) {
+            const conteudo = document.getElementById('finalizar-conteudo');
+            
+            let itensHtml = '';
+            pedido.itens.forEach(item => {
+                itensHtml += `
+                    <div class="nota-fiscal-item">
+                        <span>${item.quantidade}x ${item.nome}</span>
+                        <span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+                    </div>
+                `;
+            });
+            
+            let trocoHtml = '';
+            if (pedido.pagamento === 'dinheiro' && pedido.troco) {
+                trocoHtml = `
+                    <div class="nota-fiscal-item">
+                        <span>Troco para:</span>
+                        <span>R$ ${parseFloat(pedido.troco).toFixed(2)}</span>
+                    </div>
+                `;
+            }
+            
+            const html = `
+                <div class="nota-fiscal">
+                    <div class="nota-fiscal-header">
+                        <div class="nota-fiscal-titulo">SABOR DO CALDO</div>
+                        <div>CNPJ: 61.986.117/0001-80</div>
+                        <div>Passos-MG</div>
+                    </div>
+                    <div class="nota-fiscal-info">
+                        <div><strong>Pedido:</strong> #${pedido.numero}</div>
+                        <div><strong>Data:</strong> ${pedido.data}</div>
+                        <div><strong>Cliente:</strong> ${pedido.cliente.nome}</div>
+                        <div><strong>Telefone:</strong> ${pedido.cliente.telefone}</div>
+                        <div><strong>Endereço:</strong> ${pedido.cliente.endereco}</div>
+                        <div><strong>Pagamento:</strong> ${pedido.pagamento.toUpperCase()}</div>
+                    </div>
+                    <div class="nota-fiscal-itens">
+                        <h4>Itens do Pedido:</h4>
+                        ${itensHtml}
+                        ${trocoHtml}
+                        <div class="nota-fiscal-item">
+                            <span>Taxa de entrega:</span>
+                            <span>R$ ${pedido.taxaEntrega.toFixed(2)}</span>
+                        </div>
+                        <div class="nota-fiscal-item nota-fiscal-total">
+                            <span>Total:</span>
+                            <span>R$ ${pedido.total.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="acoes-pedido">
+                    <button class="btn btn-whatsapp" id="enviar-whatsapp">Enviar para WhatsApp</button>
+                    <button class="btn btn-imprimir" id="imprimir-pedido">Imprimir</button>
+                </div>
+            `;
+            
+            conteudo.innerHTML = html;
+            
+            // Event listeners para os botões
+            document.getElementById('enviar-whatsapp').addEventListener('click', function() {
+                enviarParaWhatsapp(pedido);
+            });
+            
+            document.getElementById('imprimir-pedido').addEventListener('click', function() {
+                imprimirPedido(pedido);
+            });
+        }
+
+        function enviarParaWhatsapp(pedido) {
+            let mensagem = `*SABOR DO CALDO*%0A`;
+            mensagem += `*Pedido:* #${pedido.numero}%0A`;
+            mensagem += `*Data:* ${pedido.data}%0A`;
+            mensagem += `*Cliente:* ${pedido.cliente.nome}%0A`;
+            mensagem += `*Telefone:* ${pedido.cliente.telefone}%0A`;
+            mensagem += `*Endereço:* ${pedido.cliente.endereco}%0A`;
+            mensagem += `*Pagamento:* ${pedido.pagamento.toUpperCase()}%0A`;
+            
+            if (pedido.pagamento === 'dinheiro' && pedido.troco) {
+                mensagem += `*Troco para:* R$ ${parseFloat(pedido.troco).toFixed(2)}%0A`;
+            }
+            
+            mensagem += `%0A*Itens do Pedido:*%0A`;
+            
+            pedido.itens.forEach(item => {
+                mensagem += `- ${item.quantidade}x ${item.nome}: R$ ${(item.preco * item.quantidade).toFixed(2)}%0A`;
+            });
+            
+            mensagem += `%0A*Taxa de entrega:* R$ ${pedido.taxaEntrega.toFixed(2)}%0A`;
+            mensagem += `*Total:* R$ ${pedido.total.toFixed(2)}`;
+            
+            const url = `https://wa.me/5535999711358?text=${mensagem}`;
+            window.open(url, '_blank');
+        }
+
+        function imprimirPedido(pedido) {
+            // Em um ambiente real, aqui seria a integração com a impressora rawbt
+            // Por enquanto, vamos apenas simular com um alerta
+            alert('Função de impressão acionada. Em um ambiente real, isso enviaria o pedido para a impressora rawbt.');
+            
+            // Para uma implementação real com rawbt, seria necessário:
+            // 1. Incluir a biblioteca rawbt
+            // 2. Configurar o formato de impressão
+            // 3. Enviar os dados formatados para a impressora
+        }
+
+        // Funções para carregar clientes e pedidos
+        function carregarClientes() {
+            const lista = document.querySelector('.lista-clientes');
+            lista.innerHTML = '';
+            
+            if (clientes.length === 0) {
+                lista.innerHTML = '<div class="cliente-item">Nenhum cliente cadastrado</div>';
+                return;
+            }
+            
+            clientes.forEach(cliente => {
+                const div = document.createElement('div');
+                div.className = 'cliente-item';
+                div.innerHTML = `
+                    <div><strong>${cliente.nome}</strong></div>
+                    <div>${cliente.telefone}</div>
+                    <div>${cliente.endereco}</div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+
+        function carregarPedidosFinalizados() {
+            const lista = document.querySelector('.lista-pedidos');
+            lista.innerHTML = '';
+            
+            if (pedidosFinalizados.length === 0) {
+                lista.innerHTML = '<div class="pedido-item">Nenhum pedido finalizado</div>';
+                return;
+            }
+            
+            // Ordenar pedidos por número (mais recentes primeiro)
+            const pedidosOrdenados = [...pedidosFinalizados].sort((a, b) => b.numero - a.numero);
+            
+            pedidosOrdenados.forEach(pedido => {
+                const div = document.createElement('div');
+                div.className = 'pedido-item';
+                div.innerHTML = `
+                    <div><strong>Pedido #${pedido.numero}</strong> - ${pedido.data}</div>
+                    <div>Cliente: ${pedido.cliente.nome} (${pedido.cliente.telefone})</div>
+                    <div>Total: R$ ${pedido.total.toFixed(2)}</div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
